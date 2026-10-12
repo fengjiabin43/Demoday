@@ -1,0 +1,11 @@
+import {build} from 'esbuild';
+import {mkdir,cp,readFile,writeFile} from 'node:fs/promises';
+import {fileURLToPath} from 'node:url';
+import path from 'node:path';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+await mkdir(path.join(root,'dist/assets'),{recursive:true});
+await build({absWorkingDir:root,entryPoints:['src/main.tsx'],bundle:true,minify:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/assets/app.js',jsx:'automatic',define:{'process.env.NODE_ENV':'"production"'},logLevel:'info'});
+await cp(path.join(root,'public'),path.join(root,'dist'),{recursive:true});
+const html=(await readFile(path.join(root,'index.html'),'utf8')).replace('<script type="module" src="/src/main.tsx"></script>','<link rel="stylesheet" href="./assets/app.css">\n  <script type="module" src="./assets/app.js"></script>');
+await writeFile(path.join(root,'dist/index.html'),html);
+console.log('Production build complete: dist/');

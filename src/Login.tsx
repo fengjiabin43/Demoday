@@ -1,0 +1,8 @@
+import {useState} from 'react';
+import {ArrowRight,Phone,Sparkles,Check} from 'lucide-react';
+import Pet from './Pet';
+import './login.css';
+export default function Login({onLogin}:{onLogin:(phone:string)=>void}){
+ const [phone,setPhone]=useState('');const [error,setError]=useState('');const valid=/^[0-9]{11}$/.test(phone);
+ return <main className="login-page"><a className="login-brand" href="#learn"><span><Sparkles size={24}/></span><div>识光<small>AI 学习搭子</small></div></a><section className="login-shell"><div className="login-intro"><p className="eyebrow">把好奇，连接成自己的知识</p><h1>发现一点，<br/>成长一点。</h1><p>和专属学习搭子一起，<br/>用零散时间探索 AI，把发现用到工作里。</p><div className="login-pet"><Pet size={250} form={3}/><span>我准备好了，一起开始吧。</span></div><div className="login-features"><span><Check size={14}/>趣味学习</span><span><Check size={14}/>知识连接</span><span><Check size={14}/>工作应用</span></div></div><form className="login-form" onSubmit={e=>{e.preventDefault();if(!valid){setError('请输入恰好 11 位数字的手机号');return;}onLogin(phone);}}><span className="login-pill">欢迎来到识光</span><h2>手机号登录</h2><p>登录后，用六个小任务认识你的学习空间。</p><label htmlFor="login-phone">手机号</label><div className={`login-input ${error?'invalid':''}`}><Phone size={18}/><input id="login-phone" type="tel" inputMode="numeric" autoComplete="tel-national" autoFocus value={phone} onChange={e=>{setPhone(e.target.value);setError('');}} placeholder="请输入 11 位数字" aria-describedby="login-hint"/></div><p id="login-hint" className={error?'login-error':'login-hint'}>{error||'模拟登录：任意 11 位数字即可，无需验证码。'}</p><button type="submit" className="btn primary">登录并开始探索<ArrowRight size={17}/></button><p className="login-footnote">当前登录仅保存在本次浏览器会话。<br/>你的学习进度保存在当前浏览器。</p></form></section><footer>识光 · 每一点发现，都算数。</footer></main>;
+}
