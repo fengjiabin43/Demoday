@@ -2,11 +2,11 @@ import {useEffect,useRef,useState} from 'react';
 import {ArrowRight,Check,ChevronLeft,Sparkles,X} from 'lucide-react';
 import './onboarding.css';
 const steps=[
- {title:'内容流',route:'workbench/library',target:'.layout-filters button:nth-child(2)',description:'视频、图文、情境案例和策展资讯集中在内容库，按形式挑选适合当下的内容。首版资讯为策展示例。',task:'点击「视频」，找到一条想学的内容。',done:'已打开视频内容流'},
- {title:'个性化推荐与重点标记',route:'learn',target:'.layout-recommend-links button:first-child',description:'识光根据你的目标和学习记录安排下一步，说明推荐理由；课程要点帮你抓住值得关注的判断。',task:'点击「推荐理由」，看看这一步为什么适合你。',done:'已查看推荐理由'},
+ {title:'内容流',route:'learn',target:'.feed-topic-filter button:nth-child(2)',description:'在资讯里发现 AI 行业和产品实践，按主题与来源筛选公开内容，收藏感兴趣的文章。当前为内置精选内容。',task:'点击「AI 行业」，看看行业相关内容。',done:'已探索 AI 行业资讯'},
+ {title:'个性化推荐与重点标记',route:'learn/recommended',target:'.layout-recommend-links button:first-child',description:'识光根据你的目标和学习记录安排下一步，说明推荐理由；课程要点帮你抓住值得关注的判断。',task:'点击「推荐理由」，看看这一步为什么适合你。',done:'已查看推荐理由'},
  {title:'趣味学习与闯关',route:'lesson/V01',target:'.layout-play-row .direct',description:'用一分钟动画理解概念，再用情境挑战检验判断。卡住可看提示，离开后能接着学。',task:'点击「直接做个判断」，打开第一道挑战。',done:'已打开情境挑战'},
  {title:'Personal Agent',route:'buddy',target:'.layout-settings-list .layout-setting-row:first-child',description:'专属搭子陪你对话、记住进展并安排路线。你可以纠正或删除记忆；首次通过挑战获得经验，解锁新形态。',task:'点击「和搭子聊一聊」，认识你的学习 Agent。',done:'已打开搭子对话'},
- {title:'知识体系与工作台',route:'workbench',target:'.layout-map-node, .layout-knowledge-list button',description:'学习后自动连接知识。在地图里查看知识卡、关系和学习证据，在工作台管理内容、记忆与成长记录。',task:'点击高亮知识点，查看它的解释和学习依据。',done:'已打开知识卡'},
+ {title:'知识体系与工作台',route:'workbench',target:'.capability-concept',description:'学习后自动连接知识。在地图里查看知识卡、关系和学习证据，在工作台管理内容、记忆与成长记录。',task:'点击高亮知识点，查看它的解释和学习依据。',done:'已打开知识卡'},
  {title:'知识应用',route:'workbench',target:'.layout-workbench .page-heading .btn.primary',description:'把知识用于真实工作问题：填写场景，生成方案判断卡，再编辑、保存和导出。模板建议仍需实际材料验证。',task:'点击「用于我的工作」，开始第一张判断卡。',done:'已进入判断卡创建页'}
 ];
 type Progress={step:number;done:number[];status:'active'|'exploring'|'completed'|'skipped'};

@@ -1,8 +1,9 @@
 import {lessons,nodes,questions,templates,relations} from './content';
+import type {FeedMemory} from './feed';
 export const STORAGE_KEY='glint.learning.v1';
 export type Event = {id:string;kind:'answer'|'video'|'reading'|'application'|'preference'|'update';object:string;time:string;nodes:string[];correct?:boolean;guided?:boolean;repeat?:boolean;choice?:number;tag?:string;version:number};
 export type Card = {id:string;goal:string;scene:string;material:string;type:number;judgment:string;checks:string;pending:string;conclusion:string;nodes:string[];modified:string;history:{time:string;conclusion:string}[]};
-export type State={version:1;userId:string;profile:{adopted:boolean;name:string;goal:number;style:string;budget:number;reducedMotion:boolean;recordPreferences:boolean};agent:{xp:number;unlocked:number[];form:number};events:Event[];rewards:Record<string,number>;drafts:Record<string,{choice:number|null;hint:boolean;seen:boolean;dirty:boolean}>;playback:Record<string,{position:number;duration:number;ranges:number[][];updated:string}>;queue:{pinned:string[];deferred:Record<string,string>;skipped:string[]};cards:Card[];chat:{id:string;question:string;answer:string;nodes:string[];time:string}[];chatSummary:{count:number;topics:string[]};logs:{id:string;text:string;time:string}[];activity:Record<string,number>;selfReports:Record<string,string>;updateSeen:boolean};
+export type State={feed?:FeedMemory;version:1;userId:string;profile:{adopted:boolean;name:string;goal:number;style:string;budget:number;reducedMotion:boolean;recordPreferences:boolean};agent:{xp:number;unlocked:number[];form:number};events:Event[];rewards:Record<string,number>;drafts:Record<string,{choice:number|null;hint:boolean;seen:boolean;dirty:boolean}>;playback:Record<string,{position:number;duration:number;ranges:number[][];updated:string}>;queue:{pinned:string[];deferred:Record<string,string>;skipped:string[]};cards:Card[];chat:{id:string;question:string;answer:string;nodes:string[];time:string}[];chatSummary:{count:number;topics:string[]};logs:{id:string;text:string;time:string}[];activity:Record<string,number>;selfReports:Record<string,string>;updateSeen:boolean};
 export type Task={id:string;kind:'video'|'question'|'application'|'update';title:string;reason:string;minutes:string;clip?:number};
 export const now=()=>new Date().toISOString();
 export const uid=()=>globalThis.crypto?.randomUUID?.() ?? `e-${Date.now()}-${Math.random()}`;
@@ -12,6 +13,7 @@ export function initialState():State {return {version:1,userId:uid(),profile:{ad
 export function validateState(s:unknown):s is State {
   if(!s||typeof s!=='object')return false;
   const a=s as State;
+  if(a.feed!==undefined&&(!a.feed||!['saved','dismissed','opened','topics'].every(key=>{const value=a.feed![key as 'saved'];return Array.isArray(value)&&value.every(item=>typeof item==='string');})||!['全部','文章','视频'].includes(a.feed.format)))return false;
   return a.version===1 && !!a.userId && !!a.profile && !!a.agent && Array.isArray(a.events) && Array.isArray(a.cards) && !!a.queue && !!a.rewards && !!a.drafts && !!a.playback && !!a.activity && Array.isArray(a.chat) && !!a.chatSummary && !!a.selfReports && typeof a.profile.budget==='number' && a.profile.goal>=0 && a.profile.goal<3 && a.events.every(e=>Array.isArray(e.nodes)&&e.nodes.every(n=>nodes.some(k=>k.id===n))&&!!e.id);
 }
 export function loadState(storage:Pick<Storage,'getItem'>):State {const raw=storage.getItem(STORAGE_KEY);if(!raw)return initialState();const parsed=JSON.parse(raw);if(!validateState(parsed))throw new Error('学习数据版本或引用无效。原始数据仍保留，请先导出再重置。');if(parsed.profile.name==='微光')parsed.profile.name='识光';return parsed;}
